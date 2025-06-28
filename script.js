@@ -192,14 +192,14 @@ function loadSavedBlogs() {
 
     const blogsHTML = blogs.map((blog, index) => `
         <div class="blog-card rounded-2xl shadow-lg p-6 border border-gray-200 slide-in-up" 
-             style="animation-delay: ${index * 0.1}s">
+             style="animation-delay: ${index * 0.1}s" data-blog-id="${blog.id}">
             <div class="mb-5">
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
-                        <h5 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                        <h5 class="blog-title text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                             ${escapeHtml(blog.title)}
                         </h5>
-                        <p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                        <p class="blog-content text-gray-600 text-sm leading-relaxed line-clamp-3">
                             ${escapeHtml(blog.body.substring(0, 150))}${blog.body.length > 150 ? '...' : ''}
                         </p>
                     </div>
@@ -213,7 +213,7 @@ function loadSavedBlogs() {
                     </div>
                 </div>
             </div>
-            <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+            <div class="blog-actions flex justify-between items-center pt-4 border-t border-gray-100">
                 <span class="text-xs text-gray-400 font-medium">
                     <i class="fas fa-calendar-alt mr-1"></i>
                     ${new Date(blog.timestamp).toLocaleDateString()}
@@ -237,16 +237,25 @@ function loadSavedBlogs() {
     container.innerHTML = blogsHTML;
 }
 
-// Edit blog functionality
+// Edit blog functionality - FIXED
 function editBlog(blogId) {
     const blog = blogs.find(b => b.id === blogId);
     if (!blog) return;
 
-    const card = event.target.closest('.blog-card');
-    const titleElement = card.querySelector('h5');
-    const bodyElement = card.querySelector('p');
-    const actionsDiv = card.querySelector('.flex.justify-between');
+    // Find the correct card using data attribute
+    const card = document.querySelector(`[data-blog-id="${blogId}"]`);
+    if (!card) return;
 
+    const titleElement = card.querySelector('.blog-title');
+    const contentElement = card.querySelector('.blog-content');
+    const actionsDiv = card.querySelector('.blog-actions');
+
+    // Hide original elements
+    titleElement.style.display = 'none';
+    contentElement.style.display = 'none';
+    actionsDiv.style.display = 'none';
+
+    // Create edit form
     const editHTML = `
         <div class="edit-form mb-4 p-4 bg-gray-50 rounded-xl">
             <div class="space-y-4">
@@ -278,10 +287,7 @@ function editBlog(blogId) {
         </div>
     `;
 
-    titleElement.style.display = 'none';
-    bodyElement.style.display = 'none';
-    actionsDiv.style.display = 'none';
-
+    // Insert edit form
     const editDiv = document.createElement('div');
     editDiv.innerHTML = editHTML;
     card.insertBefore(editDiv, actionsDiv);
@@ -316,7 +322,7 @@ function cancelEdit(blogId) {
 
 // Delete blog
 function deleteBlog(blogId) {
-    const confirmed = confirm('Are you sure you want to delete this blog?');
+    const confirmed = confirm('Are you sure you want to delete this blog? This action cannot be undone.');
     
     if (confirmed) {
         blogs = blogs.filter(blog => blog.id !== blogId);
