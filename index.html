@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="logo.png" type="image/x-icon">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-lg border-b border-gray-200">
+        <div class="container mx-auto px-6 py-5">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <i class="fas fa-blog mr-2 text-blue-600"></i>
+                    Blog Creator
+                </h1>
+                <a href="https://github.com/yourusername" target="_blank" 
+                   class="group px-5 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-lg transition-all duration-300 text-gray-700 shadow-md hover:shadow-lg transform hover:scale-105">
+                    <i class="fab fa-github mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- Button Section -->
+        <section class="text-center mb-16">
+            <div class="mb-12">
+                <h2 class="text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    Create Your Blog
+                </h2>
+                <p class="text-gray-600 text-lg">Choose your preferred method to create amazing blog posts</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <button id="manualBtn" 
+                        class="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1">
+                    <i class="fas fa-pen-to-square mr-3 group-hover:rotate-12 transition-transform duration-300"></i>
+                    Create Blog Manually
+                </button>
+                <button id="apiBtn" 
+                        class="group px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1">
+                    <i class="fas fa-cloud-download-alt mr-3 group-hover:bounce transition-transform duration-300"></i>
+                    Create Blog Using API
+                </button>
+            </div>
+        </section>
+
+        <!-- Form Section -->
+        <section id="formSection" class="hidden mb-16">
+            <!-- Manual Form -->
+            <div id="manualForm" class="hidden max-w-2xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 transform transition-all duration-500">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mb-4">
+                            <i class="fas fa-edit text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">
+                            Create Manual Blog
+                        </h3>
+                        <p class="text-gray-600 mt-2">Write your own unique blog post</p>
+                    </div>
+                    <form id="manualFormElement" class="space-y-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold mb-3 text-gray-700">
+                                <i class="fas fa-heading mr-2 text-blue-500"></i>
+                                Blog Title
+                            </label>
+                            <input type="text" id="manualTitle" required
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-300"
+                                   placeholder="Enter your blog title...">
+                        </div>
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold mb-3 text-gray-700">
+                                <i class="fas fa-align-left mr-2 text-blue-500"></i>
+                                Blog Content
+                            </label>
+                            <textarea id="manualDescription" required rows="6"
+                                      class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-300 hover:border-gray-300"
+                                      placeholder="Write your blog content here..."></textarea>
+                        </div>
+                        <button type="submit" 
+                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Blog
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- API Form -->
+            <div id="apiForm" class="hidden max-w-2xl mx-auto">
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 transform transition-all duration-500">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mb-4">
+                            <i class="fas fa-search text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">
+                            Search Blog from API
+                        </h3>
+                        <p class="text-gray-600 mt-2">Find existing blog posts from our database</p>
+                    </div>
+                    <form id="apiFormElement" class="space-y-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-semibold mb-3 text-gray-700">
+                                <i class="fas fa-search mr-2 text-green-500"></i>
+                                Search Blog Title
+                            </label>
+                            <input type="text" id="apiTitle" required
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:border-gray-300"
+                                   placeholder="Enter title to search...">
+                        </div>
+                        <button type="submit" 
+                                class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                            <i class="fas fa-search mr-2"></i>
+                            Search Blog
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Card Section -->
+        <section id="blogCardSection" class="hidden mb-16">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <h3 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                        <i class="fas fa-eye mr-3"></i>
+                        Your Blog Preview
+                    </h3>
+                    <p class="text-gray-600">Review your blog before saving</p>
+                </div>
+                <div id="blogCardContainer"></div>
+            </div>
+        </section>
+
+        <!-- Saved Blogs Section -->
+        <section id="savedBlogsSection" class="mb-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        <i class="fas fa-bookmark mr-3"></i>
+                        Saved Blogs
+                    </h3>
+                    <p class="text-gray-600">Your collection of saved blog posts</p>
+                </div>
+                <div id="savedBlogsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium">Loading...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
