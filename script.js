@@ -94,7 +94,7 @@ async function handleApiSubmit(e) {
 
         if (foundPost) {
             const blog = {
-                id: foundPost.id,
+                id: Date.now(), // Use timestamp to avoid ID conflicts
                 title: foundPost.title,
                 body: foundPost.body,
                 type: 'api',
@@ -122,7 +122,7 @@ function showBlogCard(blog) {
     tempBlog = blog;
 
     const cardHTML = `
-        <div class="blog-card rounded-2xl shadow-xl p-8 border border-gray-200 slide-in-up">
+        <div class="blog-card rounded-2xl shadow-xl p-8 border border-gray-200 slide-in-up bg-white/90 backdrop-blur-sm">
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
                     <i class="fas fa-file-alt text-white text-xl"></i>
@@ -191,44 +191,46 @@ function loadSavedBlogs() {
     }
 
     const blogsHTML = blogs.map((blog, index) => `
-        <div class="blog-card rounded-2xl shadow-lg p-6 border border-gray-200 slide-in-up" 
+        <div class="blog-card bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200 slide-in-up hover:shadow-xl transition-all duration-300" 
              style="animation-delay: ${index * 0.1}s" data-blog-id="${blog.id}">
-            <div class="mb-5">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex-1">
-                        <h5 class="blog-title text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                            ${escapeHtml(blog.title)}
-                        </h5>
-                        <p class="blog-content text-gray-600 text-sm leading-relaxed line-clamp-3">
-                            ${escapeHtml(blog.body.substring(0, 150))}${blog.body.length > 150 ? '...' : ''}
-                        </p>
-                    </div>
-                    <div class="ml-3">
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            blog.type === 'manual' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                        }">
-                            <i class="fas ${blog.type === 'manual' ? 'fa-pen' : 'fa-cloud'} mr-1"></i>
-                            ${blog.type}
-                        </span>
+            <div class="blog-content-wrapper">
+                <div class="mb-5">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1 blog-main-content">
+                            <h5 class="blog-title text-lg font-bold text-gray-900 mb-2">
+                                ${escapeHtml(blog.title)}
+                            </h5>
+                            <p class="blog-content text-gray-600 text-sm leading-relaxed">
+                                ${escapeHtml(blog.body.length > 150 ? blog.body.substring(0, 150) + '...' : blog.body)}
+                            </p>
+                        </div>
+                        <div class="ml-3">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                blog.type === 'manual' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                            }">
+                                <i class="fas ${blog.type === 'manual' ? 'fa-pen' : 'fa-cloud'} mr-1"></i>
+                                ${blog.type}
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="blog-actions flex justify-between items-center pt-4 border-t border-gray-100">
-                <span class="text-xs text-gray-400 font-medium">
-                    <i class="fas fa-calendar-alt mr-1"></i>
-                    ${new Date(blog.timestamp).toLocaleDateString()}
-                </span>
-                <div class="flex gap-2">
-                    <button onclick="editBlog(${blog.id})" 
-                            class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105">
-                        <i class="fas fa-edit mr-1"></i>
-                        Edit
-                    </button>
-                    <button onclick="deleteBlog(${blog.id})" 
-                            class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105">
-                        <i class="fas fa-trash mr-1"></i>
-                        Delete
-                    </button>
+                <div class="blog-actions flex justify-between items-center pt-4 border-t border-gray-100">
+                    <span class="text-xs text-gray-400 font-medium">
+                        <i class="fas fa-calendar-alt mr-1"></i>
+                        ${new Date(blog.timestamp).toLocaleDateString()}
+                    </span>
+                    <div class="flex gap-2">
+                        <button onclick="editBlog(${blog.id})" 
+                                class="edit-btn px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105">
+                            <i class="fas fa-edit mr-1"></i>
+                            Edit
+                        </button>
+                        <button onclick="deleteBlog(${blog.id})" 
+                                class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105">
+                            <i class="fas fa-trash mr-1"></i>
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,66 +239,96 @@ function loadSavedBlogs() {
     container.innerHTML = blogsHTML;
 }
 
-// Edit blog functionality - FIXED
+// Edit blog functionality - COMPLETELY FIXED
 function editBlog(blogId) {
     const blog = blogs.find(b => b.id === blogId);
-    if (!blog) return;
+    if (!blog) {
+        console.error('Blog not found with ID:', blogId);
+        return;
+    }
 
     // Find the correct card using data attribute
     const card = document.querySelector(`[data-blog-id="${blogId}"]`);
-    if (!card) return;
+    if (!card) {
+        console.error('Card not found for blog ID:', blogId);
+        return;
+    }
 
-    const titleElement = card.querySelector('.blog-title');
-    const contentElement = card.querySelector('.blog-content');
+    // Find elements within the card
+    const contentWrapper = card.querySelector('.blog-content-wrapper');
+    const mainContent = card.querySelector('.blog-main-content');
     const actionsDiv = card.querySelector('.blog-actions');
 
-    // Hide original elements
-    titleElement.style.display = 'none';
-    contentElement.style.display = 'none';
+    if (!contentWrapper || !mainContent || !actionsDiv) {
+        console.error('Required elements not found in card');
+        return;
+    }
+
+    // Hide the main content and actions
+    mainContent.style.display = 'none';
     actionsDiv.style.display = 'none';
 
     // Create edit form
-    const editHTML = `
-        <div class="edit-form mb-4 p-4 bg-gray-50 rounded-xl">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-2 text-gray-700">
-                        <i class="fas fa-heading mr-1"></i> Blog Title
-                    </label>
-                    <input type="text" id="editTitle${blogId}" value="${escapeHtml(blog.title)}" 
-                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-2 text-gray-700">
-                        <i class="fas fa-align-left mr-1"></i> Blog Content
-                    </label>
-                    <textarea id="editBody${blogId}" rows="4" 
-                              class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none">${escapeHtml(blog.body)}</textarea>
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button onclick="saveEdit(${blogId})" 
-                            class="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all duration-200">
-                        <i class="fas fa-check mr-1"></i> Save Changes
-                    </button>
-                    <button onclick="cancelEdit(${blogId})" 
-                            class="flex-1 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-all duration-200">
-                        <i class="fas fa-times mr-1"></i> Cancel
-                    </button>
+    const editFormHTML = `
+        <div class="edit-form-container">
+            <div class="p-4 bg-gray-50 rounded-xl mb-4">
+                <h6 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                    <i class="fas fa-edit mr-2 text-blue-500"></i>
+                    Edit Blog Post
+                </h6>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">
+                            <i class="fas fa-heading mr-1"></i> Blog Title
+                        </label>
+                        <input type="text" id="editTitle${blogId}" value="${escapeHtml(blog.title)}" 
+                               class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-700">
+                            <i class="fas fa-align-left mr-1"></i> Blog Content
+                        </label>
+                        <textarea id="editBody${blogId}" rows="5" 
+                                  class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200">${escapeHtml(blog.body)}</textarea>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="saveEdit(${blogId})" 
+                                class="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-check mr-1"></i> Save Changes
+                        </button>
+                        <button onclick="cancelEdit(${blogId})" 
+                                class="flex-1 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-times mr-1"></i> Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Insert edit form
+    // Insert edit form before actions div
     const editDiv = document.createElement('div');
-    editDiv.innerHTML = editHTML;
-    card.insertBefore(editDiv, actionsDiv);
+    editDiv.innerHTML = editFormHTML;
+    contentWrapper.insertBefore(editDiv, actionsDiv);
+
+    // Focus on title input
+    setTimeout(() => {
+        document.getElementById(`editTitle${blogId}`).focus();
+    }, 100);
 }
 
 // Save edited blog
 function saveEdit(blogId) {
-    const newTitle = document.getElementById(`editTitle${blogId}`).value.trim();
-    const newBody = document.getElementById(`editBody${blogId}`).value.trim();
+    const titleInput = document.getElementById(`editTitle${blogId}`);
+    const bodyInput = document.getElementById(`editBody${blogId}`);
+
+    if (!titleInput || !bodyInput) {
+        showNotification('Error: Could not find edit form fields!', 'error');
+        return;
+    }
+
+    const newTitle = titleInput.value.trim();
+    const newBody = bodyInput.value.trim();
 
     if (!newTitle || !newBody) {
         showNotification('Please fill in all fields!', 'error');
@@ -312,6 +344,8 @@ function saveEdit(blogId) {
         localStorage.setItem('blogs', JSON.stringify(blogs));
         loadSavedBlogs();
         showNotification('Blog updated successfully!', 'success');
+    } else {
+        showNotification('Error: Blog not found!', 'error');
     }
 }
 
@@ -388,7 +422,9 @@ function showNotification(message, type) {
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
         }, 300);
     }, 3000);
 }
